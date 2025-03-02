@@ -20,5 +20,6 @@ inline void clearBuffer()
 
 void createGraph();
 void getSpotInfo();
+void travelPath();
 
 #endif //TOURISM_H

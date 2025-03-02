@@ -73,3 +73,37 @@ void getSpotInfo()
         }
     }
 }
+
+void travelPath()
+{
+    auto& g = Graph::getInstance();
+    auto [adjM, vexes, vexNum] = g.getData();
+
+    std::cout << "===== 旅游景点导航 =====" << std::endl;
+    for (int i = 0; i < vexNum; i++)
+    {
+        std::cout << vexes[i].num << '-' << vexes[i].name << std::endl;
+    }
+    std::cout << "请输入起点编号: ";
+    int num = 0; // 要查询路线的起点编号
+    std::cin >> num;
+    std::cout << std::endl;
+    int vIndex = g.getIndex(num);
+    if (vIndex == -1)
+    {
+        std::cout << "该编号不存在." << std::endl;
+        return;
+    }
+
+    std::cout << "导游路线为:" << std::endl;
+    auto routes = g.DFSTraverse(vIndex);
+    for (int i = 0; i < routes.size(); i++)
+    {
+        std::cout << "路线" << i + 1 << ": " << vexes[routes[i][0]].name;
+        for (int j = 1; j < routes[i].size(); j++)
+        {
+            std::cout << " -> " << vexes[routes[i][j]].name;
+        }
+        std::cout << std::endl;
+    }
+}

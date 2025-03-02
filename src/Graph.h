@@ -82,10 +82,13 @@ public:
         return v != INVALID_VEX ? (&v - vexes) : -1;
     }
 
+    std::vector<std::vector<int>> DFSTraverse(int vIndex); // 返回从索引为 vIndex 的景点开始深度优先遍历的结果, 每个 std::vector<int> 存放一条遍历结果; 该函数不检测 vIndex 的合法性, 请保证传入的 vIndex 有效
 
 private:
     Graph();
     ~Graph() = default;
+
+    void dfs(int vIndex, std::vector<int>& path, std::vector<std::vector<int>>& allPaths, bool* visited);
 
     int adjMatrix[MAX_VERTEX_NUM][MAX_VERTEX_NUM]{}; // 邻接矩阵
     Vex vexes[MAX_VERTEX_NUM]; // 顶点信息数组

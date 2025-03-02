@@ -104,3 +104,36 @@ const Vex& Graph::getVertex(int num) noexcept
     }
     return vexes[index];
 }
+
+void Graph::dfs(int vIndex, std::vector<int>& path, std::vector<std::vector<int>>& allPaths, bool* visited)
+{
+    if (path.size() == vexNum)
+    {
+        // 结束标志: 访问了所有顶点
+        allPaths.push_back(path);
+        return;
+    }
+
+    visited[vIndex] = true;
+    for (int neighbor = 0; neighbor < vexNum; neighbor++)
+    {
+        if (adjMatrix[vIndex][neighbor] && !visited[neighbor]) //节点相邻且未被访问, 则访问该节点
+        {
+            path.push_back(neighbor);
+            dfs(neighbor, path, allPaths, visited); // 到此为止是找到一条 path 的代码, 下面开始回溯找其他路径
+            path.pop_back(); // 退出上面的dfs函数时上面访问的节点被设为了未访问以允许在后续的路线中访问
+        }
+    }
+    visited[vIndex] = false;
+}
+
+std::vector<std::vector<int>> Graph::DFSTraverse(int vIndex)
+{
+    std::vector<std::vector<int>> allPaths;
+    std::vector<int> path;
+    bool visited[MAX_VERTEX_NUM]{};
+    path.push_back(vIndex); // 先存起点!
+    dfs(vIndex, path, allPaths, visited);
+
+    return allPaths;
+}
