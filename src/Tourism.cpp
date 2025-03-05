@@ -107,3 +107,49 @@ void travelPath()
         std::cout << std::endl;
     }
 }
+
+void findShortRoute()
+{
+    auto& g = Graph::getInstance();
+    auto [adjM, vexes, vexNum] = g.getData();
+    std::cout << "===== 搜索最短路径 =====" << std::endl;
+    for (int i = 0; i < vexNum; i++)
+    {
+        std::cout << vexes[i].num << '-' << vexes[i].name << std::endl;
+    }
+
+    int beginNum, endNum;
+    int beginIndex, endIndex;
+    std::cout << "请输入起点的编号: ";
+    std::cin >> beginNum;
+    if ((beginIndex = g.getIndex(beginNum)) == -1)
+    {
+        std::cout << "该编号不存在." << std::endl;
+        return;
+    }
+    std::cout << "请输入终点的编号: ";
+    std::cin >> endNum;
+    if ((endIndex = g.getIndex(endNum)) == -1)
+    {
+        std::cout << "该编号不存在." << std::endl;
+        return;
+    }
+    if (beginNum == endNum)
+    {
+        std::cout << "起点与终点不应相同!" << std::endl;
+        return;
+    }
+
+    auto route = g.findShortRoute(beginIndex, endIndex);
+    std::cout << "最短路线为: ";
+    int distance = 0; // 距离值
+    std::cout << vexes[route[0]].name;
+
+    for (int i = 1; i < route.size(); i++)
+    {
+        std::cout << "->" << vexes[route[i]].name;
+        // 计算距离
+        distance += adjM[route[i - 1]][route[i]];
+    }
+    std::cout << "\n最短距离为: " << distance << 'm' << std::endl;
+}

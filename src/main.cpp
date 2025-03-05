@@ -56,6 +56,7 @@ int main()
             }
         case '4':
             {
+                findShortRoute();
                 break;
             }
         case '5':

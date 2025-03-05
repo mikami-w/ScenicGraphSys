@@ -83,6 +83,7 @@ public:
     }
 
     std::vector<std::vector<int>> DFSTraverse(int vIndex); // 返回从索引为 vIndex 的景点开始深度优先遍历的结果, 每个 std::vector<int> 存放一条遍历结果; 该函数不检测 vIndex 的合法性, 请保证传入的 vIndex 有效
+    std::vector<int> findShortRoute(int beginIndex, int endIndex); // 返回两个索引处节点的最短路径, 使用 Dijkstra 算法
 
 private:
     Graph();

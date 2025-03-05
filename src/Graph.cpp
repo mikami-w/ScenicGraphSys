@@ -4,13 +4,18 @@
 
 #include "Graph.h"
 
+#include <algorithm>
 #include <fstream>
+#include <queue>
 #include <vector>
 
-// 用于从文件中读取顶点与边的静态类
-class FileReader
+// 用于从文件中读取顶点与边
+namespace GraphIO
 {
-public:
+    //为使此相对路径能够正确起作用, 请保证data文件夹位于程序当前工作路径的上一级目录; 或者直接换成你的绝对路径
+    static constexpr const char* path_vex = "../data/Vex.txt";
+    static constexpr const char* path_edge = "../data/Edge.txt";
+
     // 从文件读取顶点信息
     static std::vector<Vex> readVertices(const std::string& path = path_vex)
     {
@@ -46,10 +51,6 @@ public:
         }
         return v;
     }
-
-    //为使此相对路径能够正确起作用, 请保证data文件夹位于程序当前工作路径的上一级目录; 或者直接换成你的绝对路径
-    static constexpr const char* path_vex = "../data/Vex.txt";
-    static constexpr const char* path_edge = "../data/Edge.txt";
 };
 
 // 静态哨兵对象, 用于指示查找失败等
@@ -57,11 +58,11 @@ const Vex Graph::INVALID_VEX(0x7fffffff);
 
 Graph::Graph()
 {
-    for (auto& x : FileReader::readVertices())
+    for (auto& x : GraphIO::readVertices())
     {
         insertVertex(x);
     }
-    for (auto& x : FileReader::readEdges())
+    for (auto& x : GraphIO::readEdges())
     {
         insertEdge(x);
     }
@@ -136,4 +137,58 @@ std::vector<std::vector<int>> Graph::DFSTraverse(int vIndex)
     dfs(vIndex, path, allPaths, visited);
 
     return allPaths;
+}
+
+std::vector<int> Graph::findShortRoute(int beginIndex, int endIndex)
+{
+    std::vector<int> route;
+    bool visited[MAX_VERTEX_NUM]{};
+    int prev[MAX_VERTEX_NUM]{}; // 记录到 i 的路径的前驱
+    int dist[MAX_VERTEX_NUM]; // 记录从起点到顶点 i 的当前最短距离
+    std::fill(dist, dist + MAX_VERTEX_NUM, INT_MAX);
+    dist[beginIndex] = 0;
+
+    struct PathInfo
+    {
+        int distance;
+        int index;
+    };
+
+    auto cmp = [](PathInfo& a, PathInfo& b)-> bool { return a.distance > b.distance; };
+    std::priority_queue<PathInfo, std::vector<PathInfo>,
+                        decltype(cmp)> pq(cmp); // 大根堆
+    pq.emplace(dist[beginIndex], beginIndex); // 初始最短距离
+
+    // 因为矩阵中存储的距离为 0 表示无连接, 用这个 lambda 表达式把 0 转换成 0x7fffffff, 同时返回 long long 避免加法导致上溢
+    auto infDist = [](int dist)-> long long { return dist == 0 ? INT_MAX : dist; };
+    while (!pq.empty())
+    {
+        int p = pq.top().index; // 目前队列中路径最短的顶点
+        pq.pop();
+
+        if (visited[p]) continue;
+        visited[p] = true;
+
+        for (int i = 0; i < vexNum; i++)
+        {
+            // 起点经 p 到达 i 的距离小于目前起点到 i 的距离,
+            if (dist[p] + infDist(adjMatrix[p][i]) < dist[i])
+            {
+                dist[i] = dist[p] + adjMatrix[p][i]; // 更新到 i 的距离
+                prev[i] = p; // 标记前驱
+                pq.emplace(dist[i], i);
+            }
+        }
+    }
+
+    // 考虑到景区是连通无向图, 没有处理起点与终点不连通的情况
+    // vector 在表头插入数据性能很烂, 所以倒序存储最短路线, 最后再翻转
+    route.push_back(endIndex);
+    for (int i = endIndex; i != beginIndex; i = prev[i])
+    {
+        route.push_back(prev[i]);
+    }
+    std::reverse(route.begin(), route.end());
+
+    return route;
 }
