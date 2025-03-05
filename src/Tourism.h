@@ -22,5 +22,6 @@ void createGraph();
 void getSpotInfo();
 void travelPath();
 void findShortRoute();
+void designPath();
 
 #endif //TOURISM_H

@@ -155,8 +155,7 @@ std::vector<int> Graph::findShortRoute(int beginIndex, int endIndex)
     };
 
     auto cmp = [](PathInfo& a, PathInfo& b)-> bool { return a.distance > b.distance; };
-    std::priority_queue<PathInfo, std::vector<PathInfo>,
-                        decltype(cmp)> pq(cmp); // 大根堆
+    std::priority_queue<PathInfo, std::vector<PathInfo>, decltype(cmp)> pq(cmp); // 大根堆
     pq.emplace(dist[beginIndex], beginIndex); // 初始最短距离
 
     // 因为矩阵中存储的距离为 0 表示无连接, 用这个 lambda 表达式把 0 转换成 0x7fffffff, 同时返回 long long 避免加法导致上溢
@@ -191,4 +190,51 @@ std::vector<int> Graph::findShortRoute(int beginIndex, int endIndex)
     std::reverse(route.begin(), route.end());
 
     return route;
+}
+
+std::vector<Edge> Graph::findMinimumSpanningTree(int beginIndex)
+{
+    std::vector<Edge> MSTree;
+
+    // bool visited_edge[MAX_VERTEX_NUM][MAX_VERTEX_NUM]{};
+    int inMST_vexCount = 1; // MSTree 中节点个数, 初始有一个起始节点
+    bool inMST_vex[MAX_VERTEX_NUM]{}; // 节点是否在 MSTree 中
+    inMST_vex[beginIndex] = true;
+
+    // 得到 adjMatrix 某一行未加入生成树的非 0 最小值; 若不存在则返回 -1
+    auto getMinIndex = [this, &inMST_vex](const int* row)-> int
+    {
+        int minWeight = INT_MAX;
+        int index = -1;
+        for (int i = 0; i < vexNum; i++)
+        {
+            if (row[i] && !inMST_vex[i] && row[i] < minWeight)
+            {
+                index = i;
+            }
+        }
+        return index;
+    };
+    while (inMST_vexCount < vexNum)
+    {
+        Edge minE{-1, -1,INT_MAX};
+        // 遍历生成树中所有节点
+        for (int i = 0; i < vexNum; i++)
+        {
+            if (!inMST_vex[i]) continue;
+            // 已被加入生成树, 寻找最小邻边
+            Edge e(i, getMinIndex(adjMatrix[i]), INT_MAX);
+            if (e.vex2 == -1) continue;
+            e.weight = adjMatrix[e.vex1][e.vex2];
+            if (e.weight < minE.weight)
+            {
+                minE = e;
+            }
+        }
+        MSTree.push_back(minE);
+        inMST_vex[minE.vex2] = true;
+        inMST_vexCount++;
+    }
+
+    return MSTree;
 }

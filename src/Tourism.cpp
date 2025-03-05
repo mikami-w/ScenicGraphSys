@@ -153,3 +153,21 @@ void findShortRoute()
     }
     std::cout << "\n最短距离为: " << distance << 'm' << std::endl;
 }
+
+void designPath()
+{
+    auto& g = Graph::getInstance();
+    auto [adjM, vexes, vexNum] = g.getData();
+    std::cout << "===== 铺设电路规划 =====" << std::endl;
+
+    std::cout << "在以下两个景点之间铺设电路: " << std::endl;
+    int length = 0;
+    auto MSTree = g.findMinimumSpanningTree(0);
+    for (auto& e : MSTree)
+    {
+        std::cout << vexes[e.vex1].name << " - " << vexes[e.vex2].name
+            << "  " << adjM[e.vex1][e.vex2] << 'm' << std::endl;
+        length += e.weight;
+    }
+    std::cout << "铺设电路的总长度为: " << length << 'm' << std::endl;
+}

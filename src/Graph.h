@@ -82,8 +82,10 @@ public:
         return v != INVALID_VEX ? (&v - vexes) : -1;
     }
 
-    std::vector<std::vector<int>> DFSTraverse(int vIndex); // 返回从索引为 vIndex 的景点开始深度优先遍历的结果, 每个 std::vector<int> 存放一条遍历结果; 该函数不检测 vIndex 的合法性, 请保证传入的 vIndex 有效
+    // 返回从索引为 vIndex 的景点开始深度优先遍历的结果, 每个 std::vector<int> 存放一条遍历结果; 该函数不检测 vIndex 的合法性, 请保证传入的 vIndex 有效
+    std::vector<std::vector<int>> DFSTraverse(int vIndex);
     std::vector<int> findShortRoute(int beginIndex, int endIndex); // 返回两个索引处节点的最短路径, 使用 Dijkstra 算法
+    std::vector<Edge> findMinimumSpanningTree(int beginIndex); // 返回以 beginIndex 为起点, 按照内存存放顺序生成的最小生成树, 使用 Prim 算法
 
 private:
     Graph();

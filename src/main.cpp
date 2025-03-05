@@ -61,6 +61,7 @@ int main()
             }
         case '5':
             {
+                designPath();
                 break;
             }
         case '0':
