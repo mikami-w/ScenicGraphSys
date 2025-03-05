@@ -231,6 +231,7 @@ std::vector<Edge> Graph::findMinimumSpanningTree(int beginIndex)
                 minE = e;
             }
         }
+        // 将距离目前的生成树边权最小的节点添加到生成树
         MSTree.push_back(minE);
         inMST_vex[minE.vex2] = true;
     }
