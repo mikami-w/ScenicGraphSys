@@ -196,10 +196,8 @@ std::vector<Edge> Graph::findMinimumSpanningTree(int beginIndex)
 {
     std::vector<Edge> MSTree;
 
-    // bool visited_edge[MAX_VERTEX_NUM][MAX_VERTEX_NUM]{};
-    int inMST_vexCount = 1; // MSTree 中节点个数, 初始有一个起始节点
     bool inMST_vex[MAX_VERTEX_NUM]{}; // 节点是否在 MSTree 中
-    inMST_vex[beginIndex] = true;
+    inMST_vex[beginIndex] = true; // 将起点添加到生成树中
 
     // 得到 adjMatrix 某一行未加入生成树的非 0 最小值; 若不存在则返回 -1
     auto getMinIndex = [this, &inMST_vex](const int* row)-> int
@@ -215,7 +213,9 @@ std::vector<Edge> Graph::findMinimumSpanningTree(int beginIndex)
         }
         return index;
     };
-    while (inMST_vexCount < vexNum)
+
+    // 直到所有节点都被添加进生成树, 停止
+    while (MSTree.size() < vexNum)
     {
         Edge minE{-1, -1,INT_MAX};
         // 遍历生成树中所有节点
@@ -224,7 +224,7 @@ std::vector<Edge> Graph::findMinimumSpanningTree(int beginIndex)
             if (!inMST_vex[i]) continue;
             // 已被加入生成树, 寻找最小邻边
             Edge e(i, getMinIndex(adjMatrix[i]), INT_MAX);
-            if (e.vex2 == -1) continue;
+            if (e.vex2 == -1) continue; // 该节点不存在未加入生成树的非 0 最小值
             e.weight = adjMatrix[e.vex1][e.vex2];
             if (e.weight < minE.weight)
             {
@@ -233,7 +233,6 @@ std::vector<Edge> Graph::findMinimumSpanningTree(int beginIndex)
         }
         MSTree.push_back(minE);
         inMST_vex[minE.vex2] = true;
-        inMST_vexCount++;
     }
 
     return MSTree;
