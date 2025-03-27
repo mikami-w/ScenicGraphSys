@@ -215,7 +215,7 @@ std::vector<Edge> Graph::findMinimumSpanningTree(int beginIndex)
     };
 
     // 直到所有节点都被添加进生成树, 停止
-    while (MSTree.size() < vexNum)
+    while (MSTree.size() < vexNum - 1)
     {
         Edge minE{-1, -1,INT_MAX};
         // 遍历生成树中所有节点
